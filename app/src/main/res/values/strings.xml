@@ -1,0 +1,10 @@
+<resources>
+
+
+    <string name="app_name">terekhov-shop</string>
+
+    <string name="loginAlert">User is authorized</string>
+
+    <string name="login">Log in</string>
+
+</resources>
