@@ -2,8 +2,9 @@ package ru.napoleonit.terekhov_shop
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.longToast
+import kotlinx.coroutines.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.startActivity
 
@@ -13,9 +14,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        loginButton.onClick {
-            longToast(R.string.loginAlert)
+        GlobalScope.launch(Dispatchers.Main) {
 
+            val okDeferred = GlobalScope.async(Dispatchers.IO) {
+                delay(3000)
+                "OK"
+            }
+
+            val vkDeferred = GlobalScope.async(Dispatchers.IO) {
+                delay(3000)
+                "VK"
+            }
+
+            val fbDeferred = GlobalScope.async(Dispatchers.IO) {
+                delay(3000)
+                "FB"
+            }
+
+            Log.i("MainActivity", "Loading started")
+
+            val okResult = okDeferred.await()
+            val vkResult = vkDeferred.await()
+            val fbResult = fbDeferred.await()
+
+            loginButton.text = "$okResult $vkResult $fbResult"
+        }
+
+        loginButton.onClick {
             startActivity<ProductsActivity>()
         }
     }

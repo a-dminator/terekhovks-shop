@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_products.*
 import kotlinx.android.synthetic.main.product_item.view.*
+import kotlinx.coroutines.*
 
 class ProductsActivity : AppCompatActivity() {
 
@@ -15,45 +16,56 @@ class ProductsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_products)
 
-        val tomato = Product(
-            title = "Помидор",
-            imageUrl = "http://dom-eda.com/uploads/images/catalog/item/c6ebcf64ba/e87b941b85_500.jpg"
-        )
+        GlobalScope.launch(Dispatchers.Main) {
 
-        val potato = Product(
-            title = "Картошка",
-            imageUrl = "https://static7.depositphotos.com/1002351/792/i/450/depositphotos_7926477-stock-photo-new-potato.jpg"
-        )
+            val productsDeferred = GlobalScope.async(Dispatchers.IO) {
 
-        val onion = Product(
-            title = "Лук",
-            imageUrl = "https://static7.depositphotos.com/1002351/792/i/450/depositphotos_7926477-stock-photo-new-potato.jpg"
-        )
+                delay(3000)
 
-        val products = listOf(tomato, potato, onion)
-
-        productsListView.adapter = object : RecyclerView.Adapter<ProductViewHolder>() {
-
-            override fun onCreateViewHolder(recyclerView: ViewGroup, viewType: Int) = run {
-                val view = layoutInflater.inflate(
-                    R.layout.product_item,
-                    recyclerView,
-                    false
+                val tomato = Product(
+                    title = "Помидор",
+                    imageUrl = "http://dom-eda.com/uploads/images/catalog/item/c6ebcf64ba/e87b941b85_500.jpg"
                 )
-                ProductViewHolder(view)
+
+                val potato = Product(
+                    title = "Картошка",
+                    imageUrl = "https://static7.depositphotos.com/1002351/792/i/450/depositphotos_7926477-stock-photo-new-potato.jpg"
+                )
+
+                val onion = Product(
+                    title = "Лук",
+                    imageUrl = "https://static7.depositphotos.com/1002351/792/i/450/depositphotos_7926477-stock-photo-new-potato.jpg"
+                )
+
+                listOf(tomato, potato, onion)
             }
 
-            override fun getItemCount() = products.size
+            val products = productsDeferred.await()
 
-            override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-                val product = products.get(position)
-                holder.itemView.titleView.text = product.title
-                Picasso.get()
-                    .load(product.imageUrl)
-                    .into(holder.itemView.pictureView)
+            productsListView.adapter = object : RecyclerView.Adapter<ProductViewHolder>() {
+
+                override fun onCreateViewHolder(recyclerView: ViewGroup, viewType: Int) = run {
+                    val view = layoutInflater.inflate(
+                        R.layout.product_item,
+                        recyclerView,
+                        false
+                    )
+                    ProductViewHolder(view)
+                }
+
+                override fun getItemCount() = products.size
+
+                override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+                    val product = products.get(position)
+                    holder.itemView.titleView.text = product.title
+                    Picasso.get()
+                        .load(product.imageUrl)
+                        .into(holder.itemView.pictureView)
+                }
             }
+
+            loadingView.visibility = View.INVISIBLE
         }
-
     }
 
 }
