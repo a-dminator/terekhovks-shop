@@ -8,7 +8,15 @@ import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_products.*
 import kotlinx.android.synthetic.main.product_item.view.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.list
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 class ProductsActivity : AppCompatActivity() {
 
@@ -16,31 +24,32 @@ class ProductsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_products)
 
+        @Serializable
+        class Product(
+            val title: String,
+            val imageUrl: String
+        )
+
+        class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
         GlobalScope.launch(Dispatchers.Main) {
 
             val productsDeferred = GlobalScope.async(Dispatchers.IO) {
 
-                delay(3000)
+                val client = OkHttpClient()
 
-                val tomato = Product(
-                    title = "Помидор",
-                    imageUrl = "http://dom-eda.com/uploads/images/catalog/item/c6ebcf64ba/e87b941b85_500.jpg"
-                )
+                val request = Request.Builder()
+                    .url("https://gist.githubusercontent.com/a-dminator/22993c39ab0d7a74c4b8f951945d9234/raw/9d18a4fd9fcb327f1f0743b6e46eccf9e7bf39c6/products.json")
+                    .build()
 
-                val potato = Product(
-                    title = "Картошка",
-                    imageUrl = "https://static7.depositphotos.com/1002351/792/i/450/depositphotos_7926477-stock-photo-new-potato.jpg"
-                )
+                val response = client.newCall(request).execute()
 
-                val onion = Product(
-                    title = "Лук",
-                    imageUrl = "https://static7.depositphotos.com/1002351/792/i/450/depositphotos_7926477-stock-photo-new-potato.jpg"
-                )
-
-                listOf(tomato, potato, onion)
+                response.body()!!.string()
             }
 
-            val products = productsDeferred.await()
+            val productsJson = productsDeferred.await()
+
+            val products = Json.parse(Product.serializer().list, productsJson)
 
             productsListView.adapter = object : RecyclerView.Adapter<ProductViewHolder>() {
 
@@ -67,14 +76,5 @@ class ProductsActivity : AppCompatActivity() {
             loadingView.visibility = View.INVISIBLE
         }
     }
-
-}
-
-class Product(
-    val title: String,
-    val imageUrl: String
-)
-
-class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 }

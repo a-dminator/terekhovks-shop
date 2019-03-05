@@ -31,7 +31,11 @@ class MainActivity : AppCompatActivity() {
                 "FB"
             }
 
-            Log.i("MainActivity", "Loading started")
+            val list = listOf(1, 2, 3)
+
+            Log.i("MainActivity", "list=$list")
+
+            // [Product@1234124, Product@2314234]
 
             val okResult = okDeferred.await()
             val vkResult = vkDeferred.await()
