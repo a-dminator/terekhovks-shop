@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         loginButton.onClick {
-            startActivity<ProductsActivity>()
+            startActivity<CategoriesActivity>()
         }
     }
 }

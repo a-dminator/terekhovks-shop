@@ -3,6 +3,7 @@ package ru.napoleonit.terekhov_shop
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.squareup.picasso.Picasso
@@ -24,6 +25,8 @@ class ProductsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_products)
 
+        val productsUrl = intent.getStringExtra("productsUrl")
+
         @Serializable
         class Product(
             val title: String,
@@ -39,7 +42,7 @@ class ProductsActivity : AppCompatActivity() {
                 val client = OkHttpClient()
 
                 val request = Request.Builder()
-                    .url("https://gist.githubusercontent.com/a-dminator/22993c39ab0d7a74c4b8f951945d9234/raw/9d18a4fd9fcb327f1f0743b6e46eccf9e7bf39c6/products.json")
+                    .url(productsUrl)
                     .build()
 
                 val response = client.newCall(request).execute()
