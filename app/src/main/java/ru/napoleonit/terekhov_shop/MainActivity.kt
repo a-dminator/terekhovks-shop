@@ -16,33 +16,43 @@ class MainActivity : AppCompatActivity() {
 
         GlobalScope.launch(Dispatchers.Main) {
 
-            val okDeferred = GlobalScope.async(Dispatchers.IO) {
+            val token = withContext(Dispatchers.IO) {
                 delay(3000)
-                "OK"
+                "Token"
             }
 
-            val vkDeferred = GlobalScope.async(Dispatchers.IO) {
-                delay(3000)
-                "VK"
-            }
-
-            val fbDeferred = GlobalScope.async(Dispatchers.IO) {
-                delay(3000)
-                "FB"
-            }
-
-            val list = listOf(1, 2, 3)
-
-            Log.i("MainActivity", "list=$list")
-
-            // [Product@1234124, Product@2314234]
-
-            val okResult = okDeferred.await()
-            val vkResult = vkDeferred.await()
-            val fbResult = fbDeferred.await()
-
-            loginButton.text = "$okResult $vkResult $fbResult"
+            loginButton.text = token
         }
+
+//        GlobalScope.launch(Dispatchers.Main) {
+//
+//            val okDeferred = GlobalScope.async(Dispatchers.IO) {
+//                delay(3000)
+//                "OK"
+//            }
+//
+//            val vkDeferred = GlobalScope.async(Dispatchers.IO) {
+//                delay(3000)
+//                "VK"
+//            }
+//
+//            val fbDeferred = GlobalScope.async(Dispatchers.IO) {
+//                delay(3000)
+//                "FB"
+//            }
+//
+//            val list = listOf(1, 2, 3)
+//
+//            Log.i("MainActivity", "list=$list")
+//
+//            // [Product@1234124, Product@2314234]
+//
+//            val okResult = okDeferred.await()
+//            val vkResult = vkDeferred.await()
+//            val fbResult = fbDeferred.await()
+//
+//            loginButton.text = "$okResult $vkResult $fbResult"
+//        }
 
         loginButton.onClick {
             startActivity<CategoriesActivity>()

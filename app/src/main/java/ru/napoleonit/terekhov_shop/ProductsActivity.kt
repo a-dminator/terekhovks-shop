@@ -2,82 +2,48 @@ package ru.napoleonit.terekhov_shop
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_products.*
-import kotlinx.android.synthetic.main.product_item.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.yesButton
 
-class ProductsActivity : AppCompatActivity() {
+class ProductsActivity : ProductsView, AppCompatActivity() {
+
+    lateinit var presenter: ProductsPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_products)
 
         val productsUrl = intent.getStringExtra("productsUrl")
-
-        @Serializable
-        class Product(
-            val title: String,
-            val imageUrl: String
-        )
-
-        class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-        GlobalScope.launch(Dispatchers.Main) {
-
-            val productsDeferred = GlobalScope.async(Dispatchers.IO) {
-
-                val client = OkHttpClient()
-
-                val request = Request.Builder()
-                    .url(productsUrl)
-                    .build()
-
-                val response = client.newCall(request).execute()
-
-                response.body()!!.string()
-            }
-
-            val productsJson = productsDeferred.await()
-
-            val products = Json.parse(Product.serializer().list, productsJson)
-
-            productsListView.adapter = object : RecyclerView.Adapter<ProductViewHolder>() {
-
-                override fun onCreateViewHolder(recyclerView: ViewGroup, viewType: Int) = run {
-                    val view = layoutInflater.inflate(
-                        R.layout.product_item,
-                        recyclerView,
-                        false
-                    )
-                    ProductViewHolder(view)
-                }
-
-                override fun getItemCount() = products.size
-
-                override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-                    val product = products.get(position)
-                    holder.itemView.titleView.text = product.title
-                    Picasso.get()
-                        .load(product.imageUrl)
-                        .into(holder.itemView.pictureView)
-                }
-            }
-
-            loadingView.visibility = View.INVISIBLE
-        }
+        presenter = ProductsPresenter(productsUrl, this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.onAppear()
+    }
+
+    override fun displayProducts(products: List<Product>) {
+        productsListView.adapter = ProductsAdapter(products, this)
+        loadingView.visibility = View.INVISIBLE
+    }
+
+    override fun onBackPressed() {
+        presenter.onReturn()
+    }
+
+    override fun showExitAlert() {
+        alert("Вы действительно хотите выйти?") {
+            yesButton { dialog ->
+                super.onBackPressed()
+            }
+            noButton { dialog ->
+
+            }
+        }
+    }
 }
