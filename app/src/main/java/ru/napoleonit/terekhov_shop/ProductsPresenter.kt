@@ -15,6 +15,9 @@ class ProductsPresenter(
             onResult = { productsJson ->
                 val products = Json.parse(Product.serializer().list, productsJson)
                 view.displayProducts(products)
+            },
+            onError = {
+                view.displayError()
             }
         )
     }
@@ -27,4 +30,5 @@ class ProductsPresenter(
 interface ProductsView {
     fun displayProducts(products: List<Product>)
     fun showExitAlert()
+    fun displayError()
 }

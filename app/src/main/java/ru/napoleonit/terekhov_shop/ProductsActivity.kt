@@ -7,6 +7,7 @@ import kotlinx.android.synthetic.main.activity_products.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.longToast
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
 
@@ -34,6 +35,10 @@ class ProductsActivity : ProductsView, AppCompatActivity() {
 
     override fun onBackPressed() {
         presenter.onReturn()
+    }
+
+    override fun displayError() {
+        longToast("Произошла ошибка!")
     }
 
     override fun showExitAlert() {

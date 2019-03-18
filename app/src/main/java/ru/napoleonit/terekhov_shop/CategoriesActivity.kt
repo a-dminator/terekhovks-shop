@@ -16,10 +16,13 @@ class CategoriesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_categories)
 
         requestMaker.make(
-            categoriesListUrl,
+            url = categoriesListUrl,
             onResult = { categoriesJson ->
                 val categories = getCategories(categoriesJson)
                 categoriesListView.adapter = CategoriesAdapter(categories, this@CategoriesActivity)
+            },
+            onError = {
+
             }
         )
     }
