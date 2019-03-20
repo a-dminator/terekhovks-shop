@@ -1,13 +1,15 @@
 package ru.napoleonit.terekhov_shop
 
+import android.content.Context
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
 
 class ProductsPresenter(
     val productsUrl: String,
-    val view: ProductsView
+    val view: ProductsView,
+    context: Context
 ) {
-    val requestMaker = getRequestMaker()
+    val requestMaker = getRequestMaker(context)
 
     fun onAppear() {
         requestMaker.make(

@@ -8,7 +8,7 @@ import kotlinx.serialization.list
 
 class CategoriesActivity : AppCompatActivity() {
 
-    val requestMaker = getRequestMaker()
+    val requestMaker = getRequestMaker(this)
     val categoriesListUrl = "https://gist.githubusercontent.com/a-dminator/22993c39ab0d7a74c4b8f951945d9234/raw/bf8799c1ce387a91f204b494a9a50f208f70cca2/categories.json"
 
     override fun onCreate(savedInstanceState: Bundle?) {

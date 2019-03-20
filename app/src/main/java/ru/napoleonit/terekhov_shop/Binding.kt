@@ -1,3 +1,5 @@
 package ru.napoleonit.terekhov_shop
 
-fun getRequestMaker(): RequestMaker = OkHttpRequestMaker()
+import android.content.Context
+
+fun getRequestMaker(context: Context): RequestMaker = OkHttpRequestMaker(context)
